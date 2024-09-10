@@ -15,6 +15,13 @@
       "when": 1725980998189,
       "tag": "0001_mysterious_princess_powerful",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1725989638286,
+      "tag": "0002_lame_vapor",
+      "breakpoints": true
     }
   ]
 }

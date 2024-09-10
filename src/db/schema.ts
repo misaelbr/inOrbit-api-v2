@@ -17,9 +17,7 @@ export const goalCompletions = pgTable('goal_completions', {
     .primaryKey()
     .$defaultFn(() => createId()),
   goalId: text('goal_id')
-    .references(() => goals.id, {
-      onDelete: 'cascade',
-    })
+    .references(() => goals.id)
     .notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
