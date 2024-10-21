@@ -7,17 +7,22 @@ export const undoCompletionRoute: FastifyPluginAsyncZod = async app => {
     '/completions/:goalCompletionId/undo',
     {
       schema: {
+        tags: ['goals'],
+        description: 'Undo goal completion',
         params: z.object({
           goalCompletionId: z.string(),
         }),
+        response: {
+          204: z.null(),
+        },
       },
     },
-    async request => {
+    async (request, response) => {
       const { goalCompletionId } = request.params
 
       await undoGoalCompletion({ goalCompletionId })
 
-      return { success: true }
+      return response.status(204).send()
     }
   )
 }

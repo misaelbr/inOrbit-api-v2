@@ -99,9 +99,7 @@ export async function getWeekSummary() {
           ${goalsCompletedWeekByWeekDay.completetedAtDate},
           ${goalsCompletedWeekByWeekDay.completions}
         )
-      )`
-        .mapWith(Object)
-        .as('goalsPerDay'),
+      )`,
     })
     .from(goalsCompletedWeekByWeekDay)
 
