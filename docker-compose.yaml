@@ -1,5 +1,3 @@
-version: '3.7'
-
 name: pocket-js-server
 
 services:

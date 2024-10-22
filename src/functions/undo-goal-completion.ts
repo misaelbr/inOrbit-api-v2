@@ -1,15 +1,29 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { db } from '../db'
 import { goalCompletions, goals } from '../db/schema'
 
 interface UndoGoalCompletionRequest {
+  userId: string
   goalCompletionId: string
 }
 
 export async function undoGoalCompletion({
+  userId,
   goalCompletionId,
 }: UndoGoalCompletionRequest) {
+  const validateUserRequest = await db
+    .select({ userId: goals.userId })
+    .from(goals)
+    .innerJoin(goalCompletions, eq(goals.id, goalCompletions.goalId))
+    .where(
+      and(eq(goals.userId, userId), eq(goalCompletions.id, goalCompletionId))
+    )
+
+  if (!validateUserRequest) {
+    throw new Error('User not authorized to undo this goal completion')
+  }
+
   const result = await db
     .delete(goalCompletions)
-    .where(eq(goalCompletions.id, goalCompletionId))
+    .where(and(eq(goalCompletions.id, goalCompletionId)))
 }

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { client, db } from '.'
-import { goalCompletions, goals } from './schema'
+import { goalCompletions, goals, users } from './schema'
 
 async function seed() {
   try {
@@ -10,13 +10,33 @@ async function seed() {
       await trx.delete(goalCompletions)
       await trx.delete(goals)
 
+      const [user] = await db
+        .insert(users)
+        .values([
+          {
+            name: 'John Doe',
+            email: 'jonn@example.com',
+            externalAccountId: 125165,
+            avatarUrl: 'https://github.com/misaelbr.png',
+          },
+        ])
+        .returning()
+
       // Inserir novos dados na tabela goals
       const result = await trx
         .insert(goals)
         .values([
-          { title: 'Acordar cedo', desiredWeeklyFrequency: 5 },
-          { title: 'Fazer exercícios', desiredWeeklyFrequency: 3 },
-          { title: 'Estudar inglês', desiredWeeklyFrequency: 7 },
+          { userId: user.id, title: 'Acordar cedo', desiredWeeklyFrequency: 5 },
+          {
+            userId: user.id,
+            title: 'Fazer exercícios',
+            desiredWeeklyFrequency: 3,
+          },
+          {
+            userId: user.id,
+            title: 'Estudar inglês',
+            desiredWeeklyFrequency: 7,
+          },
         ])
         .returning()
 

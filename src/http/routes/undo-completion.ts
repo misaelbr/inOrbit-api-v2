@@ -1,11 +1,13 @@
 import { z } from 'zod'
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { undoGoalCompletion } from '../../functions/undo-goal-completion'
+import { authenticateUserHook } from '../hooks/authenticate-user'
 
 export const undoCompletionRoute: FastifyPluginAsyncZod = async app => {
   app.delete(
     '/completions/:goalCompletionId/undo',
     {
+      onRequest: [authenticateUserHook],
       schema: {
         tags: ['goals'],
         description: 'Undo goal completion',
@@ -18,9 +20,10 @@ export const undoCompletionRoute: FastifyPluginAsyncZod = async app => {
       },
     },
     async (request, response) => {
+      const userId = request.user.sub
       const { goalCompletionId } = request.params
 
-      await undoGoalCompletion({ goalCompletionId })
+      await undoGoalCompletion({ userId, goalCompletionId })
 
       return response.status(204).send()
     }
