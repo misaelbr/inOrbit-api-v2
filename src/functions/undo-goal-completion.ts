@@ -19,11 +19,11 @@ export async function undoGoalCompletion({
       and(eq(goals.userId, userId), eq(goalCompletions.id, goalCompletionId))
     )
 
-  if (!validateUserRequest) {
+  if (validateUserRequest.length < 1) {
     throw new Error('User not authorized to undo this goal completion')
   }
 
-  const result = await db
+  await db
     .delete(goalCompletions)
     .where(and(eq(goalCompletions.id, goalCompletionId)))
 }
