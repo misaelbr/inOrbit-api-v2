@@ -1,5 +1,3 @@
-version: '3.7'
-
 name: pocket-js-server
 
 services:
@@ -11,3 +9,5 @@ services:
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
       - POSTGRES_DB=inorbit
+    volumes:
+      - ./docker:/docker-entrypoint-initdb.d
