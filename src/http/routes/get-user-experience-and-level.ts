@@ -13,6 +13,7 @@ export const getUserLevelAndExperienceRoute: FastifyPluginAsyncZod =
           onRequest: [authenticateUserHook],
           tags: ['users', 'gamification'],
           description: 'Get user experience and level',
+          operationId: 'getUserLevelAndExperience',
           response: {
             200: z.object({
               experience: z.number(),
