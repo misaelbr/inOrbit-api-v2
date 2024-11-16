@@ -23,14 +23,21 @@ jobs:
           --health-retries 10
     steps:
       - uses: actions/checkout@v4
+
+      # Instalação do PNPM
       - name: Install PNPM
         uses: pnpm/action-setup@v4
         with:
           version: 9
+
+      # Configuração do Node.js com cache do PNPM
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      - run: npm ci
-      - run: npm run test
+      # Instala dependências com PNPM
+      - run: pnpm install
+
+      # Executa os testes com PNPM
+      - run: pnpm run test
