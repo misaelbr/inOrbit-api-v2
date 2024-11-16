@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm'
+import { and, count, eq, sql } from 'drizzle-orm'
 import { db } from '../db'
 import { goalCompletions, goals, users } from '../db/schema'
 
@@ -14,21 +14,29 @@ export async function undoGoalCompletion({
   const validateUserRequest = await db
     .select({
       userId: goals.userId,
-      completionCount: sql`COUNT(${goalCompletions.id})`.as('completionCount'),
+      completionCount: count(goalCompletions.id),
       desiredWeeklyFrequency: goals.desiredWeeklyFrequency,
+      goalId: goals.id,
     })
     .from(goals)
     .innerJoin(goalCompletions, eq(goals.id, goalCompletions.goalId))
-    .where(
-      and(eq(goals.userId, userId), eq(goalCompletions.id, goalCompletionId))
-    )
-    .groupBy(goals.userId, goals.desiredWeeklyFrequency)
+    .where(eq(goals.userId, userId))
+    .groupBy(goals.userId, goals.desiredWeeklyFrequency, goals.id)
+
+  const [goal] = await db
+    .select({ goalId: goalCompletions.goalId })
+    .from(goalCompletions)
+    .where(eq(goalCompletions.id, goalCompletionId))
 
   if (validateUserRequest.length < 1) {
     throw new Error('User not authorized to undo this goal completion')
   }
 
-  const { completionCount, desiredWeeklyFrequency } = validateUserRequest[0]
+  const statsFromGoal = validateUserRequest.filter(
+    stats => stats.goalId === goal.goalId
+  )
+
+  const { completionCount, desiredWeeklyFrequency } = statsFromGoal[0]
 
   const isGoalCompleted = completionCount === desiredWeeklyFrequency
   const experienceToSubtract = isGoalCompleted ? 7 : 5

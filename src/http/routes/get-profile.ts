@@ -7,10 +7,11 @@ export const getProfileRoute: FastifyPluginAsyncZod = async app => {
   app.get(
     '/profile',
     {
+      onRequest: [authenticateUserHook],
       schema: {
-        onRequest: [authenticateUserHook],
         tags: ['users'],
         description: 'Get authenticated user profile',
+        operationId: 'getProfile',
         response: {
           200: z.object({
             profile: z.object({
