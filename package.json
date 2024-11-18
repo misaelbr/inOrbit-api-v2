@@ -11,7 +11,9 @@
     "pretest:watch": "pnpm db:migrate:test",
     "db:migrate:test": "dotenv -e .env.test -- drizzle-kit migrate",
     "test": "dotenv -e .env.test -- vitest run",
-    "test:watch": "dotenv -e .env.test -- vitest"
+    "test:watch": "dotenv -e .env.test -- vitest",
+    "build": "tsup",
+    "start": "node dist/http/server.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +26,7 @@
     "dotenv-cli": "^7.4.2",
     "drizzle-kit": "^0.26.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "tsup": "^8.3.5",
     "tsx": "^4.19.1",
     "typescript": "^5.6.3",
     "vitest": "^2.1.3"
