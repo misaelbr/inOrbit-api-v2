@@ -19,7 +19,7 @@ describe('authenticate from github code', () => {
     vi.spyOn(github, 'getUserFromAccessToken').mockResolvedValueOnce({
       id: 123456,
       name: 'John Doe',
-      email: null,
+      email: 'johndoe@test.com',
       avatar_url: 'https://github.com/misaelbr.png',
     })
 
@@ -32,7 +32,7 @@ describe('authenticate from github code', () => {
     const [userOnDb] = await db
       .select()
       .from(users)
-      .where(eq(users.externalAccountId, 123456))
+      .where(eq(users.email, 'johndoe@test.com'))
 
     expect(userOnDb.name).toEqual('John Doe')
   })
@@ -40,23 +40,19 @@ describe('authenticate from github code', () => {
   it('should be able to authenticate with existing github user', async () => {
     const existing = await makeUser({
       name: 'Jane Doe',
+      email: 'jane@teste.com',
     })
 
     vi.spyOn(github, 'getUserFromAccessToken').mockResolvedValueOnce({
-      id: existing.externalAccountId,
+      id: Number(existing.id),
       name: 'John Doe',
-      email: null,
+      email: existing.email,
       avatar_url: 'https://github.com/misaelbr.png',
     })
 
     await db
       .delete(users)
-      .where(
-        and(
-          eq(users.externalAccountId, existing.externalAccountId),
-          ne(users.id, existing.id)
-        )
-      )
+      .where(and(eq(users.email, existing.email), ne(users.id, existing.id)))
 
     const sut = await authenticateFromGithubCode({
       code: 'sample-github-code',
@@ -67,7 +63,7 @@ describe('authenticate from github code', () => {
     const [userOnDb] = await db
       .select()
       .from(users)
-      .where(eq(users.externalAccountId, existing.externalAccountId))
+      .where(eq(users.email, existing.email))
 
     expect(userOnDb.name).toEqual('Jane Doe')
   })

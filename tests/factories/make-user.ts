@@ -13,7 +13,6 @@ export async function makeUser(
       name: faker.person.fullName(),
       email: faker.internet.email(),
       avatarUrl: faker.image.avatarGitHub(),
-      externalAccountId: faker.number.int({ min: 1, max: 1_000_000 }),
       ...override,
     })
     .returning()

@@ -1,11 +1,12 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { db } from '../db'
-import { users } from '../db/schema'
+import { oAuthLinkedAccounts, users } from '../db/schema'
 import {
   getAccessTokenFromCode,
   getUserFromAccessToken,
 } from '../modules/github-oauth'
 import { authenticateUser } from '../modules/auth'
+import { createUser } from './create-user'
 
 interface authenticateFromGithubCodeRequest {
   code: string
@@ -23,30 +24,55 @@ export async function authenticateFromGithubCode({
 
   const result = await db
     .select()
-    .from(users)
-    .where(eq(users.externalAccountId, githubUser.id))
+    .from(oAuthLinkedAccounts)
+    .where(
+      and(
+        eq(oAuthLinkedAccounts.issuer, 'github'),
+        eq(oAuthLinkedAccounts.externalAccountId, githubUser.id.toString()),
+        eq(oAuthLinkedAccounts.externalAccountEmail, githubUser.email)
+      )
+    )
 
-  const userAlreadExists = result.length > 0
+  const accountAlreadLinked = result.length > 0
 
   let userId: string | null
 
-  if (userAlreadExists) {
-    userId = result[0].id
-  } else {
-    const [insertedUser] = await db
-      .insert(users)
+  if (accountAlreadLinked) {
+    userId = result[0].userId
+    const token = await authenticateUser(userId)
+
+    return { token }
+  }
+
+  const checkUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, githubUser.email))
+
+  const userExists = checkUser.length > 0
+
+  if (userExists) {
+    const [insertedAccount] = await db
+      .insert(oAuthLinkedAccounts)
       .values({
-        name: githubUser.name,
-        email: githubUser.email,
-        avatarUrl: githubUser.avatar_url,
-        externalAccountId: githubUser.id,
+        userId: checkUser[0].id,
+        issuer: 'github',
+        externalAccountId: githubUser.id.toString(),
+        externalAccountEmail: githubUser.email,
       })
       .returning()
 
-    userId = insertedUser.id
+    const token = await authenticateUser(insertedAccount.userId)
+    return { token }
   }
 
-  const token = await authenticateUser(userId)
+  const { user } = await createUser({
+    name: githubUser.name || '',
+    email: githubUser.email,
+    avatarUrl: githubUser.avatar_url,
+  })
+
+  const token = await authenticateUser(user.id)
 
   return { token }
 }

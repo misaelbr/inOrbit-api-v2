@@ -7,7 +7,7 @@ interface AccessTokenResponse {
 interface GetUserResponse {
   id: number
   name: string | null
-  email: string | null
+  email: string
   avatar_url: string
 }
 

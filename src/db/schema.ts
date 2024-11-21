@@ -7,10 +7,9 @@ export const users = pgTable('users', {
     .$defaultFn(() => createId()),
 
   name: text('name'),
-  email: text('email'),
+  email: text('email').notNull(),
   avatarUrl: text('avatar_url').notNull(),
   experience: integer('experience').notNull().default(0),
-  externalAccountId: integer('external_account_id').notNull().unique(),
 })
 
 export const goals = pgTable('goals', {
@@ -39,4 +38,15 @@ export const goalCompletions = pgTable('goal_completions', {
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
+})
+
+export const oAuthLinkedAccounts = pgTable('oauth_linked_accounts', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+
+  userId: text('user_id').notNull(),
+  issuer: text('issuer').notNull(),
+  externalAccountId: text('external_account_id').notNull(),
+  externalAccountEmail: text('external_account_email').notNull(),
 })
