@@ -20,6 +20,7 @@ import { getProfileRoute } from './routes/get-profile'
 import { getUserLevelAndExperienceRoute } from './routes/get-user-experience-and-level'
 import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
+import { authenticateFromGoogleRoute } from './routes/authenticate-from-google'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 app.register(fastifyCors, {
@@ -53,6 +54,7 @@ app.register(getPendingGoalsRoute)
 app.register(getWeekSummaryRoute)
 app.register(undoCompletionRoute)
 app.register(authenticateFromGithubRoute)
+app.register(authenticateFromGoogleRoute)
 app.register(getProfileRoute)
 app.register(getUserLevelAndExperienceRoute)
 
