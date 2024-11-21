@@ -50,6 +50,20 @@
       "when": 1729775055555,
       "tag": "0006_supreme_starjammers",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1732202728461,
+      "tag": "0007_friendly_catseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1732204762517,
+      "tag": "0008_red_the_phantom",
+      "breakpoints": true
     }
   ]
 }

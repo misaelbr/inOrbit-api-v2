@@ -16,7 +16,6 @@ async function seed() {
           {
             name: 'John Doe',
             email: 'jonn@example.com',
-            externalAccountId: 125165,
             avatarUrl: 'https://github.com/misaelbr.png',
           },
         ])

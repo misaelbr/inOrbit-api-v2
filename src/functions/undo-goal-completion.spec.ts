@@ -12,6 +12,7 @@ describe('undo goal completion', () => {
     const user = await makeUser()
     const goal = await makeGoal({ userId: user.id })
     const goalCompletion = await makeGoalCompletion({ goalId: goal.id })
+    await makeGoalCompletion({ goalId: goal.id })
 
     // Obtem experiência inicial do usuário
     const initialUser = await db
