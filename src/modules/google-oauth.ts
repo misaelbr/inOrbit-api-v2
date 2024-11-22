@@ -1,3 +1,4 @@
+import { google } from 'googleapis'
 import { env } from '../env'
 
 interface GoogleTokensResponse {
@@ -15,23 +16,20 @@ interface GoogleUserResponse {
   picture: string
 }
 
+function getOauth2Client() {
+  return new google.auth.OAuth2(
+    env.GOOGLE_CLIENT_ID,
+    env.GOOGLE_CLIENT_SECRET_KEY,
+    env.GOOGLE_REDIRECT_URI
+  )
+}
+
 export async function getAccessTokenFromCode(code: string) {
-  const accessTokenUrl = new URL('token', 'https://oauth2.googleapis.com/')
+  const oauth2Client = getOauth2Client()
 
-  accessTokenUrl.searchParams.set('code', code)
-  accessTokenUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID)
-  accessTokenUrl.searchParams.set('client_secret', env.GOOGLE_CLIENT_SECRET_KEY)
-  accessTokenUrl.searchParams.set('redirect_uri', env.GOOGLE_REDIRECT_URI)
-  accessTokenUrl.searchParams.set('grant_type', 'authorization_code')
+  const { tokens } = await oauth2Client.getToken(code)
 
-  const response = await fetch(accessTokenUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  })
-
-  const { access_token }: GoogleTokensResponse = await response.json()
+  const { access_token } = tokens
 
   return access_token
 }
@@ -45,7 +43,8 @@ export async function getUserFromAccessToken(
 
   const response = await fetch(userUrl)
 
-  const data: GoogleUserResponse = await response.json()
+  const res = await response.json()
+  const data: GoogleUserResponse = res
 
   return data
 }
