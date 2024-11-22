@@ -18,6 +18,7 @@ export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
         // }),
         response: {
           201: z.object({ token: z.string() }),
+          401: z.object({ message: z.string() }),
         },
       },
     },
@@ -25,6 +26,10 @@ export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
       const { code } = request.query
 
       const { token } = await authenticateFromGoogleCode({ code })
+
+      if (!token) {
+        return reply.status(401).send({ message: 'Unauthorized' })
+      }
 
       return reply.status(201).send({ token })
     }
