@@ -2,10 +2,6 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { authenticateFromGoogleCode } from '../../functions/authenticate-from-google-code'
 
-function isEmpty(val: string): boolean {
-  return val === undefined || val == null || val.length <= 0
-}
-
 export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
   app.post(
     '/auth/google',
