@@ -10,16 +10,19 @@ export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
         tags: ['auth'],
         description: 'Authenticate user from Google',
         operationId: 'authenticateFromGoogle',
-        body: z.object({
+        querystring: z.object({
           code: z.string(),
         }),
+        // body: z.object({
+        //   code: z.string(),
+        // }),
         response: {
           201: z.object({ token: z.string() }),
         },
       },
     },
     async (request, reply) => {
-      const { code } = request.body
+      const { code } = request.query
 
       const { token } = await authenticateFromGoogleCode({ code })
 
