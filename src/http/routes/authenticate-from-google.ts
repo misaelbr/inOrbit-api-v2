@@ -14,7 +14,7 @@ export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
           .object({
             code: z.string(),
           })
-          .refine(v => !v.code || v.code.length > 0, {
+          .refine(v => !v.code || v.code.length < 1, {
             message: 'code is required',
           }),
         // body: z.object({
