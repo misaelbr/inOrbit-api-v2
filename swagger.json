@@ -334,8 +334,8 @@
               "type": "string"
             },
             "in": "query",
-            "name": "code",
-            "required": true
+            "name": "auth",
+            "required": false
           }
         ],
         "responses": {

@@ -2,6 +2,10 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { authenticateFromGoogleCode } from '../../functions/authenticate-from-google-code'
 
+function isEmpty(val: string): boolean {
+  return val === undefined || val == null || val.length <= 0
+}
+
 export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
   app.post(
     '/auth/google',
@@ -10,13 +14,9 @@ export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
         tags: ['auth'],
         description: 'Authenticate user from Google',
         operationId: 'authenticateFromGoogle',
-        querystring: z
-          .object({
-            code: z.string(),
-          })
-          .refine(v => !v.code || v.code.length < 1, {
-            message: 'code is required',
-          }),
+        querystring: z.object({
+          auth: z.string().optional(),
+        }),
         // body: z.object({
         //   code: z.string(),
         // }),
@@ -27,13 +27,13 @@ export const authenticateFromGoogleRoute: FastifyPluginAsyncZod = async app => {
       },
     },
     async (request, reply) => {
-      const { code } = request.query
+      const { auth } = request.query
 
-      const { token } = await authenticateFromGoogleCode({ code })
-
-      if (!token) {
+      if (!auth) {
         return reply.status(401).send({ message: 'Unauthorized' })
       }
+
+      const { token } = await authenticateFromGoogleCode({ code: auth })
 
       return reply.status(201).send({ token })
     }
