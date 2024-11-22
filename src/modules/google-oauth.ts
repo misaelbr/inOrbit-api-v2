@@ -21,10 +21,7 @@ export async function getAccessTokenFromCode(code: string) {
   accessTokenUrl.searchParams.set('code', code)
   accessTokenUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID)
   accessTokenUrl.searchParams.set('client_secret', env.GOOGLE_CLIENT_SECRET_KEY)
-  accessTokenUrl.searchParams.set(
-    'redirect_uri',
-    'http://localhost:3000/auth/google/callback'
-  )
+  accessTokenUrl.searchParams.set('redirect_uri', env.GOOGLE_REDIRECT_URI)
   accessTokenUrl.searchParams.set('grant_type', 'authorization_code')
 
   const response = await fetch(accessTokenUrl, {
@@ -46,11 +43,7 @@ export async function getUserFromAccessToken(
   userUrl.searchParams.set('access_token', accessToken)
   userUrl.searchParams.set('alt', 'json')
 
-  const response = await fetch(userUrl, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+  const response = await fetch(userUrl)
 
   const data: GoogleUserResponse = await response.json()
 
