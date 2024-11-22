@@ -328,16 +328,25 @@
           "auth"
         ],
         "description": "Authenticate user from Google",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "auth",
-            "required": false
-          }
-        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "201": {
             "description": "Default Response",
@@ -352,25 +361,6 @@
                   },
                   "required": [
                     "token"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
                   ],
                   "additionalProperties": false
                 }
