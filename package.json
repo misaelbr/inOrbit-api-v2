@@ -40,7 +40,7 @@
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.35.2",
     "fastify": "^5.0.0",
-    "fastify-type-provider-zod": "^4.0.2",
+    "fastify-type-provider-zod": "4.0.2",
     "jose": "^5.9.6",
     "postgres": "^3.4.4",
     "zod": "^3.23.8"
