@@ -16,7 +16,7 @@ interface GoogleUserResponse {
 }
 
 export async function getAccessTokenFromCode(code: string) {
-  const accessTokenUrl = new URL('https://oauth2.googleapis.com/token')
+  const accessTokenUrl = new URL('token', 'https://oauth2.googleapis.com/')
 
   accessTokenUrl.searchParams.set('code', code)
   accessTokenUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID)
