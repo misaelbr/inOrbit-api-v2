@@ -48,27 +48,23 @@ export async function authenticateFromGithubCode({
   const userExists = checkUser.length > 0
 
   if (userExists) {
-    const [insertedAccount] = await db
-      .insert(oAuthLinkedAccounts)
-      .values({
-        userId: checkUser[0].id,
-        issuer: 'github',
-        externalAccountId: githubUser.id.toString(),
-        externalAccountEmail: githubUser.email,
-      })
-      .returning()
-
-    const token = await authenticateUser(insertedAccount.userId)
-    return { token }
+    userId = checkUser[0].id
+  } else {
+    const { user } = await createUser({
+      name: githubUser.name || '',
+      email: githubUser.email,
+      avatarUrl: githubUser.avatar_url,
+    })
+    userId = user.id
   }
 
-  const { user } = await createUser({
-    name: githubUser.name || '',
-    email: githubUser.email,
-    avatarUrl: githubUser.avatar_url,
+  await db.insert(oAuthLinkedAccounts).values({
+    userId,
+    issuer: 'github',
+    externalAccountId: githubUser.id.toString(),
+    externalAccountEmail: githubUser.email,
   })
 
-  const token = await authenticateUser(user.id)
-
+  const token = await authenticateUser(userId)
   return { token }
 }

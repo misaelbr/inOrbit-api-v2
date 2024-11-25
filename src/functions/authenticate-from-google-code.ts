@@ -7,6 +7,7 @@ import {
 } from '../modules/google-oauth'
 import { authenticateUser } from '../modules/auth'
 import { createUser } from './create-user'
+import { check } from 'drizzle-orm/mysql-core'
 
 interface authenticateFromGoogleCodeRequest {
   code: string
@@ -23,7 +24,7 @@ export async function authenticateFromGoogleCode({
 
   const googleUser = await getUserFromAccessToken(accessToken)
 
-  const result = await db
+  const linkedAccount = await db
     .select()
     .from(oAuthLinkedAccounts)
     .where(
@@ -34,14 +35,8 @@ export async function authenticateFromGoogleCode({
       )
     )
 
-  const accountAlreadLinked = result.length > 0
-
-  let userId: string | null
-
-  if (accountAlreadLinked) {
-    userId = result[0].userId
-    const token = await authenticateUser(userId)
-
+  if (linkedAccount.length > 0) {
+    const token = await authenticateUser(linkedAccount[0].userId)
     return { token }
   }
 
@@ -50,30 +45,28 @@ export async function authenticateFromGoogleCode({
     .from(users)
     .where(eq(users.email, googleUser.email))
 
+  let userId: string
+
   const userExists = checkUser.length > 0
 
   if (userExists) {
-    const [insertedAccount] = await db
-      .insert(oAuthLinkedAccounts)
-      .values({
-        userId: checkUser[0].id,
-        issuer: 'google',
-        externalAccountId: googleUser.id.toString(),
-        externalAccountEmail: googleUser.email,
-      })
-      .returning()
-
-    const token = await authenticateUser(insertedAccount.userId)
-    return { token }
+    userId = checkUser[0].id
+  } else {
+    const { user } = await createUser({
+      name: googleUser.name,
+      email: googleUser.email,
+      avatarUrl: googleUser.picture,
+    })
+    userId = user.id
   }
 
-  const { user } = await createUser({
-    name: googleUser.name,
-    email: googleUser.email,
-    avatarUrl: googleUser.picture,
+  await db.insert(oAuthLinkedAccounts).values({
+    userId,
+    issuer: 'google',
+    externalAccountId: googleUser.id.toString(),
+    externalAccountEmail: googleUser.email,
   })
 
-  const token = await authenticateUser(user.id)
-
+  const token = await authenticateUser(userId)
   return { token }
 }
