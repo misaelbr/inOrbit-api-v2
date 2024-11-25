@@ -4,6 +4,13 @@ import { makeGoal } from '../../tests/factories/make-goal'
 import { makeGoalCompletion } from '../../tests/factories/make-goal-completion'
 import { getWeekSummary } from './get-week-summary'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import { da } from '@faker-js/faker'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('America/Sao_Paulo')
 
 describe('get week summary', () => {
   it('should be able to get week summary', async () => {
