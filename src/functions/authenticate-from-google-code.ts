@@ -16,6 +16,11 @@ export async function authenticateFromGoogleCode({
   code,
 }: authenticateFromGoogleCodeRequest) {
   const accessToken = await getAccessTokenFromCode(code)
+
+  if (!accessToken) {
+    throw new Error('Invalid accessToken')
+  }
+
   const googleUser = await getUserFromAccessToken(accessToken)
 
   const result = await db
