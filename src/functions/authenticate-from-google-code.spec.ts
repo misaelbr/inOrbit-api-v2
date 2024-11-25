@@ -23,9 +23,15 @@ describe('authenticate from google code', () => {
         'https://lh3.googleusercontent.com/ogw/AF2bZyg3TbtKmeA3-q-YcUkHdpCsi_NXWw1DZIVjzEaSaNyrOdgA=s124-c-mo',
     })
 
+    vi.spyOn(google, 'getAccessTokenFromCode').mockResolvedValueOnce(
+      'umtokemdetestes'
+    )
+
     const sut = await authenticateFromGoogleCode({
       code: 'sample-google-code',
     })
+
+    console.log(sut)
 
     expect(sut.token).toEqual(expect.any(String))
 
@@ -50,6 +56,10 @@ describe('authenticate from google code', () => {
       picture:
         'https://lh3.googleusercontent.com/ogw/AF2bZyg3TbtKmeA3-q-YcUkHdpCsi_NXWw1DZIVjzEaSaNyrOdgA=s124-c-mo',
     })
+
+    vi.spyOn(google, 'getAccessTokenFromCode').mockResolvedValueOnce(
+      'umtokemdetestes'
+    )
 
     await db
       .delete(users)
