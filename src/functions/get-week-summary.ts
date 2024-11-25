@@ -47,7 +47,10 @@ export async function getWeekSummary({
       .select({
         id: goalCompletions.id,
         title: goals.title,
-        completedAt: goalCompletions.createdAt,
+        completedAt:
+          sql /*sql*/`${goalCompletions.createdAt} AT TIME ZONE 'America/Sao_Paulo'`.as(
+            'completedAt'
+          ),
         completedAtDate: sql /*sql*/`
           DATE(${goalCompletions.createdAt} AT TIME ZONE 'America/Sao_Paulo')
         `.as('completedAtDate'),
