@@ -1,9 +1,15 @@
 import dayjs from 'dayjs'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import { db } from '../db'
 import { goalCompletions, goals } from '../db/schema'
 import { and, desc, eq, gte, lte, sql } from 'drizzle-orm'
 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+dayjs.tz.setDefault('America/Sao_Paulo')
 dayjs.extend(weekOfYear)
 
 interface getWeekSummaryRequest {
@@ -27,7 +33,13 @@ export async function getWeekSummary({
         createdAt: goals.createdAt,
       })
       .from(goals)
-      .where(and(lte(goals.createdAt, lastDayOfWeek), eq(goals.userId, userId)))
+      .where(
+        and(
+          lte(goals.createdAt, lastDayOfWeek),
+          gte(goals.createdAt, firstDayOfWeek),
+          eq(goals.userId, userId)
+        )
+      )
   )
 
   const goalsCompletedInWeek = db.$with('goals_completed_in_week').as(
