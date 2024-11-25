@@ -4,10 +4,17 @@ import { makeGoal } from '../../tests/factories/make-goal'
 import { makeGoalCompletion } from '../../tests/factories/make-goal-completion'
 import { getWeekSummary } from './get-week-summary'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('America/Sao_Paulo')
 
 describe('get week summary', () => {
   it('should be able to get week summary', async () => {
-    const weekStartsAt = dayjs(new Date(2024, 9, 20))
+    const weekStartsAt = dayjs(new Date(2024, 9, 20, 10))
+      .tz('America/Sao_Paulo')
       .startOf('week')
       .toDate()
 

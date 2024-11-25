@@ -31,8 +31,6 @@ describe('authenticate from google code', () => {
       code: 'sample-google-code',
     })
 
-    console.log(sut)
-
     expect(sut.token).toEqual(expect.any(String))
 
     const [userOnDb] = await db
