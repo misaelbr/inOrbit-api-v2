@@ -113,7 +113,7 @@ export async function getWeekSummary({
         .as('completed'),
       total: sql /*sql*/`(
         SELECT
-          SUM(${goalsCreatedUpToWeek.desiredWeeklyFrequency})
+          COALESCE(SUM(${goalsCreatedUpToWeek.desiredWeeklyFrequency}),0)
         FROM ${goalsCreatedUpToWeek}
       )`
         .mapWith(Number)
