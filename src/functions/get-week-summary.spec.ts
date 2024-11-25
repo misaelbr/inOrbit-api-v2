@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 
 describe('get week summary', () => {
   it('should be able to get week summary', async () => {
-    const weekStartsAt = dayjs(new Date(2024, 9, 20))
+    const weekStartsAt = dayjs(new Date(2024, 9, 20, 10))
       .startOf('week')
       .toDate()
 
